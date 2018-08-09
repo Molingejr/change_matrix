@@ -15,7 +15,22 @@ def start_menu():
     print("3. Exit\n")
 
     c = int(input("Enter choice: "))
-    while c not in (1, 2, 3):
+    while c < 1 or c > 3:
+        print("Choice doesn't exist")
+        c = int(input("Enter choice: "))
+
+    return c
+
+
+def viewpoint_menu():
+    "Displays menu for creating viewpoints"
+    print("Create viewpoints")
+    print("---------------------")
+    print("1. Choose change source")
+    print("2. Create viewpoints")
+
+    c = int(input("Enter choice: "))
+    while c < 1 or c > 2:
         print("Choice doesn't exist")
         c = int(input("Enter choice: "))
 

@@ -45,7 +45,7 @@ class ChangeMatrix:
 
     def add_row(self):
         """Adds a new row at the end of the matrix"""
-        self._matrix.append([])
+        self._matrix.append([None]*len(self._matrix[0]))
 
     def delete_row(self, r: int):
         """Deletes a row other than the first two row"""
@@ -53,6 +53,13 @@ class ChangeMatrix:
             print("Cannot delete that row. It is needed to effect change")
             return
         del self._matrix[r]
+
+    def get_data(self, *pos):
+        try:
+            r, c = pos
+            return self._matrix[r][c]
+        except IndexError as exc:
+            print(exc)
 
     def get_matrix(self):
         """Returns the matrix"""
