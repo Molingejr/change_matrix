@@ -12,7 +12,9 @@ from menu import start_menu
 
 # Todo: Consider renaming this function
 def run():
-    links = ('c-link', 's-link', 'i-link', 't-link', 'p-link')
+    """This function run the project in a console"""
+
+    links = ('c-link', 's-link', 'i-link', 't-link', 'p-link')  # default links
     default_csources = ["Change Audits", "Basic Nature", "Business Issues", "Mission & policies", "Technology"]
 
     # Create an array of change sources with user inputs or default values
@@ -20,14 +22,14 @@ def run():
     if choice == 1:
         csources = default_csources
     elif choice == 2:
-        csources = []
+        csources = []   # list to hold change sources
         while True:
             new_cs = input("Enter name of change source or -1 to exit: ")
             if new_cs == '-1':
                 break
-            csources.append(new_cs)
+            csources.append(new_cs)     # add to our list of csources
     elif choice == 3:
-        print("Exiting....")
+        print("Exiting....")    # Exit program
         return
 
     # Set change sources to default if user did not specify any
@@ -43,13 +45,13 @@ def run():
     csource = csources[r]
     print("You have chosen to create viewpoints under the '{}' change source".format(csource))
 
-    # Create an array of viewpoints with inputs from the user
-    viewpoints = []
+    # Create an array of viewpoints with inputs from the user and stops when user enters -1
+    viewpoints = []     # list to hold viewpoints
     while True:
         v = input("Enter viewpoint or -1 to exit: ")
         if v == '-1':
             break
-        viewpoints.append(v)
+        viewpoints.append(v)    # add to viewpoint
 
     # Set viewpoints array to default if user failed to provide any
     if not viewpoints:
@@ -57,9 +59,9 @@ def run():
         viewpoints = ["Organisation & governance", "Business processes", "People", "Information (Asset)", "Technology"]
 
     print("\nCreating an empty change matrix with 2 rows and {} columns...".format(len(viewpoints)))
-    cmatrix = create_cmatrix(len(viewpoints))
-    dgraph = create_dependency_graph()
-    dtable = create_dependency_table()
+    cmatrix = create_cmatrix(len(viewpoints))   # create change matrix class object
+    dgraph = create_dependency_graph()      # create dependency graph class object
+    dtable = create_dependency_table()      # create dependency graph class object
 
     print("Change matrix created")
     print("An empty dependency graph has been created")
@@ -67,7 +69,7 @@ def run():
 
     print("\nHere are your viewpoints ", viewpoints)
     print("\nHere is your change matrix")
-    display(matrix=cmatrix.get_matrix())
+    display(matrix=cmatrix.get_matrix())    # display cmatrix contents
 
     # Insert a series of nodes into row 0 and row 1 of the change matrix as structures and processes respectively
     print("\nCreate processes and structures")
@@ -80,10 +82,10 @@ def run():
         try:
             r = int(input("Enter 0 for structure and 1 for process:  "))
             c = int(input("Enter the column index to store node in: "))
-            cmatrix.add_node(node, r, c)
-            new_node = cmatrix.get_matrix()[r][c]
-            dgraph.insert_vertex(node)
-            dtable.add_node(node)
+            cmatrix.add_node(node, r, c)        # add node to cmatrix
+            new_node = cmatrix.get_matrix()[r][c]       # get new node from change matrix
+            dgraph.insert_vertex(node)      # insert new node as a vertex in the dependency graph
+            dtable.add_node(node)           # insert new node in the dependency table
         except (IndexError, ValueError) as exc:
             print(exc)
 
@@ -100,13 +102,19 @@ def run():
     # Todo: Establish differences between link types
     print("\nEnter postions of two nodes and their link")
     print("Available links are ", links)
-    new_link = True
+
+    # Create a series of links between nodes on the change matrix
+    new_link = True     # determines if user wants to create another link
     while new_link is True:
         try:
+            # get nodes from user
             node1 = tuple(map(int, input("node 1 index (r c): ").split()))
             node2 = tuple(map(int, input("node 2 index (r c): ").split()))
+
+            # store nodes in change matrix at appropriate locations
             node1 = cmatrix.get_data(*node1)
             node2 = cmatrix.get_data(*node2)
+
             link = input("Enter the link you wish to create: ")
             if (link in links) and (link == 'p-link'):
                 # Todo: Ensure node1 is a process and node2 is a structure
@@ -121,11 +129,13 @@ def run():
                 accept_link = False
 
             if accept_link:
+                # Check if nodes exist in our dependency graph and assign them to node  1 and 2 respectively
                 for v in dgraph.vertices():
                     if v.element() == node1:
                         node1 = v
                     elif v.element() == node2:
                         node2 = v
+                # insert an edge into the graph along with the link between the vertices/nodes
                 dgraph.insert_edge(node1, node2, link)
             else:
                 print("link is not available")
@@ -136,15 +146,17 @@ def run():
         except Exception as exc:
             print(exc)
         
-    print("Your updated graph is: ")
+    print("\nYour updated graph is: ")
 
-    vertices = []
+    vertices = []       # holds the vertices/nodes of our dependency graph
+    # Retrieves both endpoints from an edge along with its link (node1, node2, link)
     for e in dgraph.edges():
         e1, e2 = [v.element() for v in e.endpoints()]
         link = e.element()
         print(e1, e2, link)
         vertices.extend([e1, e2])
 
+    # Display nodes that don't have links between them
     for v in dgraph.vertices():
         if v.element() not in vertices:
             print(v.element())
